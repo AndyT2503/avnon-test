@@ -1,0 +1,48 @@
+<ng-container *ngFor="let item of formQuestion.controls; let i = index">
+  <form nz-form [formGroup]="formQuestion.controls[i]">
+    <nz-form-item>
+      <nz-form-label [nzRequired]="listQuestion[i].isRequired"
+        >{{ i + 1 }}. {{ listQuestion[i].question }}</nz-form-label
+      >
+      <ng-container *ngIf="listQuestion[i].type === 'paragraph'; else checkBox">
+        <textarea
+          nz-input
+          placeholder="Type answer here"
+          formControlName="answer"
+          [nzAutosize]="{ minRows: 2, maxRows: 3 }"
+        ></textarea>
+      </ng-container>
+      <ng-template #checkBox>
+        <div>
+          <ng-container
+            *ngFor="
+              let answer of listQuestion[i].answerOptions;
+              let answerIndex = index
+            "
+          >
+            <div>
+              <label
+                nz-checkbox
+                [ngModelOptions]="{standalone: true}"
+                [(ngModel)]="answer.isChecked"
+                (ngModelChange)="onCheckBoxCheck($event, i, answerIndex)"
+                >{{ answer.content }}</label
+              >
+            </div>
+          </ng-container>
+          <textarea
+            *ngIf="listQuestion[i].allowUserSpecifyAnswer"
+            nz-input
+            formControlName="note"
+            [nzAutosize]="{ minRows: 2, maxRows: 3 }"
+          ></textarea>
+        </div>
+      </ng-template>
+    </nz-form-item>
+  </form>
+</ng-container>
+<a (click)="openModalAddQuestion()">Add New Question</a> -
+<a (click)="deleteAllQuestion()">Delete All Question</a>
+<div class="btn">
+  <button (click)="reviewAnswer()" nz-button nzType="primary">Review my answers</button>
+</div>

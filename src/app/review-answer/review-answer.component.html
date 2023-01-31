@@ -1,0 +1,16 @@
+<ng-container
+  *ngFor="let item of listAnswer$; let i = index; trackBy: trackByIndex"
+>
+  <div>
+    <h4>{{ i + 1 }}. {{ item.question }}</h4>
+    <div *ngIf="item.type === 'paragraph'; else checkBox">
+      {{ item.answer }}
+    </div>
+    <ng-template #checkBox>
+      <ng-container *ngFor="let answer of item.answer | isArray">
+        <div>- {{answer}} {{answer === 'Other' ? ' - ' + item.note : ''}}</div>
+      </ng-container>
+    </ng-template>
+  </div>
+</ng-container>
+<a routerLink="/form/builder">Back to Forms Builder</a>

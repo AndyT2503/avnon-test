@@ -1,0 +1,59 @@
+<form nz-form [formGroup]="form">
+  <nz-form-label nzRequired>Question Type</nz-form-label>
+  <nz-form-item>
+    <nz-form-control>
+      <nz-select
+        formControlName="type"
+        (ngModelChange)="onQuestionTypeChange($event)"
+      >
+        <nz-option nzValue="paragraph" nzLabel="Paragraph"></nz-option>
+        <nz-option nzValue="checkbox" nzLabel="Check Box List"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzRequired>Question</nz-form-label>
+    <nz-form-control nzErrorTip="Please input question">
+      <textarea
+        nz-input
+        placeholder="Type question here"
+        formControlName="question"
+        [nzAutosize]="{ minRows: 2, maxRows: 3 }"
+      ></textarea>
+    </nz-form-control>
+  </nz-form-item>
+
+  <ng-container *ngIf="form.get('type')?.value === 'checkbox'">
+    <ng-container formArrayName="answerOptions">
+      <ng-container
+        *ngFor="let formItem of answerOptionsForm.controls; let i = index"
+      >
+        <form nz-form [formGroupName]="i">
+          <nz-form-item
+            ><nz-form-label nzRequired>Answer {{ i + 1 }}</nz-form-label>
+            <nz-form-control nzErrorTip="Please input answer option"
+              ><input
+                nz-input
+                placeholder="Add Answer Option"
+                type="text"
+                formControlName="content" /></nz-form-control
+          ></nz-form-item>
+        </form>
+      </ng-container>
+    </ng-container>
+    <nz-form-item
+      ><a (click)="addNewAnswerOption()">+ Add another answer</a></nz-form-item
+    >
+
+    <nz-form-item>
+      <label nz-checkbox formControlName="allowUserSpecifyAnswer"
+        >Allow user to specify their own answer</label
+      >
+    </nz-form-item>
+  </ng-container>
+  <nz-form-item>
+    <label nz-checkbox formControlName="isRequired"
+      >This field is required</label
+    ></nz-form-item
+  >
+</form>
