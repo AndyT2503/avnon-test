@@ -49,6 +49,7 @@ export class QuestionService {
 
   clearQuestion(): void {
     this.ls.removeItem(STORAGE_KEY.listQuestion);
+    this.ls.removeItem(STORAGE_KEY.listAnswer);
     this._listQuestion$.next([]);
   }
 }
