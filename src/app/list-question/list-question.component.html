@@ -31,7 +31,7 @@
             </div>
           </ng-container>
           <textarea
-            *ngIf="listQuestion[i].allowUserSpecifyAnswer"
+            *ngIf="listQuestion[i].allowUserSpecifyAnswer && checkShowOtherTextArea(i)"
             nz-input
             formControlName="note"
             [nzAutosize]="{ minRows: 2, maxRows: 3 }"

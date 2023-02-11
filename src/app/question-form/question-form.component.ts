@@ -5,7 +5,7 @@ import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  Validators
+  Validators,
 } from '@angular/forms';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -13,7 +13,10 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { QuestionType } from '../shared/const';
 import { AnswerOption } from '../shared/data-access/models';
-import { CreateQuestionRequest, QuestionService } from '../shared/data-access/services';
+import {
+  CreateQuestionRequest,
+  QuestionService,
+} from '../shared/data-access/services';
 import { TypedFormGroup } from '../shared/utils';
 @Component({
   selector: 'app-question-form',
@@ -52,7 +55,7 @@ export class QuestionFormComponent {
   });
 
   get answerOptionsForm() {
-    return this.form.controls["answerOptions"] as FormArray;
+    return this.form.controls['answerOptions'] as FormArray;
   }
 
   private newAnswerOption() {
@@ -80,6 +83,14 @@ export class QuestionFormComponent {
   submit(): boolean {
     if (this.form.invalid) {
       Object.values(this.form.controls).forEach((control) => {
+        if (control instanceof FormArray) {
+          control.controls.forEach((childFormGroup) => {
+            Object.values(childFormGroup.controls).forEach((childControl) => {
+              childControl.markAsDirty();
+              childControl.updateValueAndValidity({ onlySelf: true });
+            });
+          });
+        }
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });

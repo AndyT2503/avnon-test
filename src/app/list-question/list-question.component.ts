@@ -12,6 +12,8 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidatorFn,
+  Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -29,6 +31,7 @@ import {
   provideDestroyService,
   TypedFormGroup,
 } from '../shared/utils';
+
 
 @Component({
   selector: 'app-list-question',
@@ -70,7 +73,11 @@ export default class ListQuestionComponent implements OnInit {
         this.listQuestion = res;
         const listCurrentAnswer = this.answerService.getListAnswer();
         res.forEach((item, index) => {
-          const newForm = this.createNewFormQuestion(item.type, item.question);
+          const newForm = this.createNewFormQuestion(
+            item.type,
+            item.question,
+            item.isRequired,
+          );
           const currAns = listCurrentAnswer.find(
             (x) => x.question === item.question,
           );
@@ -91,27 +98,35 @@ export default class ListQuestionComponent implements OnInit {
       });
   }
 
+  checkShowOtherTextArea(index: number) {
+    return this.formQuestion.controls[index].get('answer')?.value.includes('Other');
+  }
+
   private createNewFormQuestion(
     type: QuestionType,
     question: string,
+    isRequired: boolean,
   ): TypedFormGroup<Answer> {
-    return new FormGroup({
-      answer: new FormControl<string[] | string>(
-        type === 'paragraph' ? '' : [],
-        {
+    return new FormGroup(
+      {
+        answer: new FormControl<string[] | string>(
+          type === 'paragraph' ? '' : [],
+          {
+            nonNullable: true,
+            validators: isRequired ? Validators.required : null,
+          },
+        ),
+        question: new FormControl(question, {
           nonNullable: true,
-        },
-      ),
-      question: new FormControl(question, {
-        nonNullable: true,
-      }),
-      note: new FormControl('', {
-        nonNullable: true,
-      }),
-      type: new FormControl(type, {
-        nonNullable: true,
-      }),
-    });
+        }),
+        note: new FormControl('', {
+          nonNullable: true,
+        }),
+        type: new FormControl(type, {
+          nonNullable: true,
+        }),
+      },
+    );
   }
 
   onCheckBoxCheck(
@@ -133,10 +148,6 @@ export default class ListQuestionComponent implements OnInit {
       this.formQuestion.controls[questionNumber]
         .get('answer')
         ?.setValue(newAnswers);
-
-      console.log(
-        this.formQuestion.controls[questionNumber].get('answer')?.value,
-      );
     }
   }
 
@@ -151,6 +162,14 @@ export default class ListQuestionComponent implements OnInit {
   }
 
   reviewAnswer(): void {
+    if (this.formQuestion.invalid) {
+      this.nzModalService.error({
+        nzTitle: 'Error',
+        nzContent:
+          'Your answer is invalid. Please check your answer before review!',
+      });
+      return;
+    }
     this.answerService.createAnswer(this.formQuestion.getRawValue());
     this.router.navigate(['/form/answers']);
   }
