@@ -32,7 +32,6 @@ import {
   TypedFormGroup,
 } from '../shared/utils';
 
-
 @Component({
   selector: 'app-list-question',
   standalone: true,
@@ -98,35 +97,29 @@ export default class ListQuestionComponent implements OnInit {
       });
   }
 
-  checkShowOtherTextArea(index: number) {
-    return this.formQuestion.controls[index].get('answer')?.value.includes('Other');
-  }
-
   private createNewFormQuestion(
     type: QuestionType,
     question: string,
     isRequired: boolean,
   ): TypedFormGroup<Answer> {
-    return new FormGroup(
-      {
-        answer: new FormControl<string[] | string>(
-          type === 'paragraph' ? '' : [],
-          {
-            nonNullable: true,
-            validators: isRequired ? Validators.required : null,
-          },
-        ),
-        question: new FormControl(question, {
+    return new FormGroup({
+      answer: new FormControl<string[] | string>(
+        type === 'paragraph' ? '' : [],
+        {
           nonNullable: true,
-        }),
-        note: new FormControl('', {
-          nonNullable: true,
-        }),
-        type: new FormControl(type, {
-          nonNullable: true,
-        }),
-      },
-    );
+          validators: isRequired ? Validators.required : null,
+        },
+      ),
+      question: new FormControl(question, {
+        nonNullable: true,
+      }),
+      note: new FormControl('', {
+        nonNullable: true,
+      }),
+      type: new FormControl(type, {
+        nonNullable: true,
+      }),
+    });
   }
 
   onCheckBoxCheck(
@@ -148,6 +141,11 @@ export default class ListQuestionComponent implements OnInit {
       this.formQuestion.controls[questionNumber]
         .get('answer')
         ?.setValue(newAnswers);
+    }
+    if (answerContent === 'Other' && !isChecked) {
+      this.formQuestion.controls[questionNumber].patchValue({
+        note: '',
+      });
     }
   }
 

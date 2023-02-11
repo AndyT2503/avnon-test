@@ -23,19 +23,23 @@
             <div>
               <label
                 nz-checkbox
-                [ngModelOptions]="{standalone: true}"
+                [ngModelOptions]="{ standalone: true }"
                 [(ngModel)]="answer.isChecked"
                 (ngModelChange)="onCheckBoxCheck($event, i, answerIndex)"
                 >{{ answer.content }}</label
               >
             </div>
+            <textarea
+              *ngIf="
+                listQuestion[i].allowUserSpecifyAnswer &&
+                answerIndex === listQuestion[i].answerOptions.length - 1 &&
+                answer.isChecked
+              "
+              nz-input
+              formControlName="note"
+              [nzAutosize]="{ minRows: 2, maxRows: 3 }"
+            ></textarea>
           </ng-container>
-          <textarea
-            *ngIf="listQuestion[i].allowUserSpecifyAnswer && checkShowOtherTextArea(i)"
-            nz-input
-            formControlName="note"
-            [nzAutosize]="{ minRows: 2, maxRows: 3 }"
-          ></textarea>
         </div>
       </ng-template>
     </nz-form-item>
@@ -44,5 +48,7 @@
 <a (click)="openModalAddQuestion()">Add New Question</a> -
 <a (click)="deleteAllQuestion()">Delete All Question</a>
 <div class="btn">
-  <button (click)="reviewAnswer()" nz-button nzType="primary">Review my answers</button>
+  <button (click)="reviewAnswer()" nz-button nzType="primary">
+    Review my answers
+  </button>
 </div>
